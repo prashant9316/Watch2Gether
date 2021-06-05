@@ -15,8 +15,8 @@ It is perfect for watching shows together with everyone.
 ```npm run test2```  
   
   
-The Basic Server runs at port 8080 on your localhost.  
-The Socket.io Service runs at port 5000 on your localhost.  
+The Basic Server runs at ```port 8080``` on your localhost.  
+The Socket.io Service runs at ```port 5000``` on your localhost.  
 You can change the default ports by changing the port in these files i.e., server.js and SocketProvider.js respectively and the same in the config.yml file.  
   
 ## Starting the ngrok Server  
