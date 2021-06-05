@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch2gether</title>
+</head>
+<body>
+    <video id="videoPlayer" controls muted>
+        <source src="/video" type="video/mp4">
+    </video>
+    <h2>connected</h2>
+    <style>
+        body{
+            background-color: grey;
+        }
+        .container{
+            border:chartreuse solid 2px;
+        }
+        video{
+            width: 50%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.0/socket.io.js"></script>
+
+    <script>
+        const socket = io.connect('http://localhost:5000')
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        socket.on("connect", () => {
+            socket.send("Connection Established!");
+            // socket.emit("message", "Connection Established!")
+
+            socket.on("new-changes", (data) => {
+                if(data.status == true){
+                    videoPlayer.play()
+                } else if(data.status == false){
+                    videoPlayer.pause()
+                } 
+                if(Math.abs(data.timeplay - videoPlayer.currentTime)>1) {
+                    videoPlayer.currentTime = data.timeplay
+                }
+            })
+
+        })
+        videoPlayer.onseeked = () =>{
+            const newTime = videoPlayer.currentTime;
+            
+            const data = {
+                status: !videoPlayer.paused,
+                timeplay: newTime
+            }
+            socket.emit("changes", data)
+        }
+        videoPlayer.addEventListener('play', () => {
+            changeStatus(true)
+        })
+        videoPlayer.addEventListener('pause', ()=>{
+            changeStatus(false)
+        })
+
+        const changeStatus = (state) => {
+            const data = {
+                status: state,
+                timeplay: videoPlayer.currentTime
+            }
+            socket.emit("changes", data)
+        }
+    </script>
+</body>
+</html>
